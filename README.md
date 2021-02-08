@@ -32,6 +32,10 @@ And then:
     from DexLab.client import Client
     client = Client('', '')
 
+## Contributors
+- Brendan C. Lee
+- Chinyu
+
 ### Version Logs
 #### 2021-02-08
 
