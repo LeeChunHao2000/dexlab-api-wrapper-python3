@@ -33,7 +33,7 @@ And then:
     client = Client('', '')
 
 ## Contributors
-- Brendan C. Lee
+- [Brendan C. Lee](https://github.com/LeeChunHao2000/)
 - Chinyu
 
 ### Version Logs
