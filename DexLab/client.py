@@ -187,6 +187,15 @@ class Client(object):
         else:
             return self._send_request('public', 'GET', f"volumes/{market}")
 
+    def get_public_all_markets_volumes_total(self):
+        """
+        https://docs.dexlab.space/api-documentation/rest-api/volume-api
+
+        :return: a dict contains the total volumes in USDT of market
+        """
+
+        return self._send_request('public', 'GET', f"volumes/summary/total-trade-price")
+
     def get_public_all_markets_trades(self):
         """
         https://docs.dexlab.space/api-documentation/rest-api/trade-api-1
