@@ -10,18 +10,21 @@ from .helpers import *
 
 # The order API is still in preparation.
 class Client(object):
-    def __init__(self, key, secret, subaccount=None, timeout=30):
-        self._api_key = key
-        self._api_secret = secret
-        self._api_subacc = subaccount
+    def __init__(self, key, timeout=30):
+        self.key = key
         self._api_timeout = int(timeout)
 
     def _build_headers(self, scope, method, endpoint, query=None):
 
         headers = {
             'Accept': 'application/json',
-            'User-Agent': 'FTX-Trader/1.0',
+            'User-Agent': 'DexLab-Trader/1.0',
         }
+
+        if scope.lower() == 'private':
+            headers.update({
+                'wallet_private_key': self.key
+            })
 
         return headers
 
@@ -48,7 +51,7 @@ class Client(object):
 
         # Build final url here
         url = self._build_url(scope, method, endpoint, query)
-
+        
         try:
             if method == 'GET':
                 response = requests.get(url, headers=headers).json()
@@ -224,3 +227,13 @@ class Client(object):
         """
 
         return self._send_request('public', 'GET', f"trades/{market}/last")
+
+    def get_private_all_account_balances(self):
+        """
+        https://docs.dexlab.space/api-documentation/rest-api/beta-wallet-api-1
+
+        :return: a list contains all account balances
+        """
+
+        return self._send_request('private', 'GET', f'wallet/balances')
+
