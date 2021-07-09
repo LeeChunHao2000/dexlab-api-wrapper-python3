@@ -17,6 +17,7 @@ USE THIS WRAPPER AT YOUR OWN RISK, I WILL NOT CORRESPOND TO ANY LOSES
 If useful, buy me a coffee?
 
 - ETH: 0xA9D89A5CAf6480496ACC8F4096fE254F24329ef0 (brendanc.eth)
+- SPL: AQBqATwRqbU8odBL3RCFovzLbHR13MuoF2v53QpmjEV3
 
 ## Installation
 
@@ -40,7 +41,7 @@ And then:
 #### 2021-07-09
 
  - Support Wallet and Trade API
- 
+
 #### 2021-02-08
 
  - Birth!
