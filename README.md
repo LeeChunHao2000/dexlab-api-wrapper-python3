@@ -30,13 +30,17 @@ This is an introduction on how to get started with DexLab client. First, make su
 And then:
 
     from DexLab.client import Client
-    client = Client('', '')
+    client = Client('')
 
 ## Contributors
 - [Brendan C. Lee](https://github.com/LeeChunHao2000/)
 - Chinyu
 
 ### Version Logs
+#### 2021-07-09
+
+ - Support Wallet and Trade API
+ 
 #### 2021-02-08
 
  - Birth!

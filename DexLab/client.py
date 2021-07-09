@@ -3,7 +3,7 @@ import hmac
 import json
 import requests
 import urllib
-from urllib.parse import urlencode
+from urllib.parse import quote_from_bytes, urlencode
 
 from .constants import *
 from .helpers import *
@@ -23,7 +23,7 @@ class Client(object):
 
         if scope.lower() == 'private':
             headers.update({
-                'wallet_private_key': self.key
+                'x-wallet-private-key': self.key
             })
 
         return headers
@@ -56,10 +56,11 @@ class Client(object):
             if method == 'GET':
                 response = requests.get(url, headers=headers).json()
             elif method == 'POST':
+                print (url, headers, query)
                 response = requests.post(
                     url, headers=headers, json=query).json()
-            elif method == 'DELETE':
-                response = requests.delete(
+            elif method == 'PUT':
+                response = requests.put(
                     url, headers=headers, json=query).json()
         except Exception as e:
             print('[x] Error: {}'.format(e.args[0]))
@@ -228,6 +229,8 @@ class Client(object):
 
         return self._send_request('public', 'GET', f"trades/{market}/last")
 
+    # Private API (Read Only)
+
     def get_private_all_account_balances(self):
         """
         https://docs.dexlab.space/api-documentation/rest-api/beta-wallet-api-1
@@ -237,3 +240,105 @@ class Client(object):
 
         return self._send_request('private', 'GET', f'wallet/balances')
 
+    def get_private_open_orders(self, quote, base):
+        """
+        https://docs.dexlab.space/api-documentation/rest-api/order-api
+
+        :param quote: the quote coin you trade
+        :param base: the base coin you trade
+        :return: a dict contains the open orders that have not yet been filled
+        """
+
+        query = {
+            'coin': quote,
+            'priceCurrency': base
+        }
+
+        return self._send_request('private', 'GET', f'orders/open-orders', query=query)
+
+    def get_private_unsettle_balance(self, quote, base):
+        """
+        https://docs.dexlab.space/api-documentation/rest-api/order-api
+
+        :param quote: the quote coin you settle
+        :param base: the base coin you settle
+        :return: a dict contains the balance that have not yet been settled
+        """
+
+        query = {
+            'coin': quote,
+            'priceCurrency': base
+        }
+
+        return self._send_request('private', 'GET', f'orders/settles', query=query)
+
+    # Private API (Operation)
+    def transfer_token(self, from, to, token, amount, cluster='mainnet'):
+        """
+        https://docs.dexlab.space/api-documentation/rest-api/wallet-api
+
+        :param cluster: mainnet,devnet,testnet (default: mainnet)
+        :param from: sending token address (BTC wallet address in case of BTC)
+        :param to: recipient Wallet Address (SOL address if you have an outgoing token wallet)
+        :param token: token contract address to send
+        :param amount: quantity to send
+        :return: a dict contains the operation result
+        """
+
+        query = {
+            'from': from,
+            'to': to,
+            'tokenAddress': token,
+            'amount': amount
+        }
+
+        return self._send_request('private', 'POST', f'wallet/transfer?cluster={cluster}', query=query)
+
+
+    def settle_fund(self, quote, base):
+        """
+        https://docs.dexlab.space/api-documentation/rest-api/order-api
+
+        :return: a dict contains the operation result
+        """
+
+        query = {
+            'coin': quote,
+            'priceCurrency': base
+        }
+
+        return self._send_request('private', 'POST', f'orders/settles', query=query)
+
+    def place_order(self, side, quote, base, amount, price, type='limit'):
+        """
+        https://docs.dexlab.space/api-documentation/rest-api/order-api
+
+        :param side: buy / sell
+        :param quote: the quote coin you wanna trade
+        :param base: the base coin you wanna trade
+        :param amount: the quantity you wanna trade
+        :param price: the price you wanna trade
+        :param type: limit / ioc / postOnly (default: limit)
+        :return: a dict contains the operation result and orderId
+        """
+
+        query = {
+            'side': side,
+            'coin': quote,
+            'priceCurrency': base,
+            'quantity': amount,
+            'price': price,
+            'orderType': type
+        }
+
+        return self._send_request('private', 'POST', f'orders', query=query)
+
+    def cancel_order(self, orderId):
+        """
+        https://docs.dexlab.space/api-documentation/rest-api/order-api
+
+        :param orderId: the order you wanna cancel
+        :return: a dict contains the operation result
+        """
+
+        return self._send_request('private', 'PUT', f'orders/{orderId}/cancel')
